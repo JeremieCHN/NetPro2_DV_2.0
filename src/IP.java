@@ -11,8 +11,8 @@ class IP {
     private String ip3;
 
     // constructor
-    IP(String str, char division) throws IOException {
-        String[] strings = str.split(Character.toString(division));
+    IP(String str, String divisionReg) throws IOException {
+        String[] strings = str.split(divisionReg);
         if (strings.length != 4)
             throw new IOException("The String of IP is wrong");
         else {

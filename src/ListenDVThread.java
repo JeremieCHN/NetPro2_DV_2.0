@@ -38,7 +38,7 @@ public class ListenDVThread extends Thread {
             socket = socket_;
             String strIP = socket.getRemoteSocketAddress().toString().substring(1);
             try {
-                neighborIP_ = new IP(strIP.substring(0, strIP.indexOf(':')), '.');
+                neighborIP_ = new IP(strIP.substring(0, strIP.indexOf(':')), "\\.");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -65,13 +65,13 @@ public class ListenDVThread extends Thread {
                 }
 
                 Router.RemoveNeighbor(neighborIP_);
-                MyConsole.log("Cannot receive DV from Neighbor(" + neighborIP_.toString() + "), code:0.");
+                MyConsole.log("Cannot receive DV from Neighbor(" + neighborIP_.toString('.') + "), code:0.");
             } catch (IOException e) {
                 Router.RemoveNeighbor(neighborIP_);
-                MyConsole.log("Cannot receive DV from Neighbor(" + neighborIP_.toString() + "), code:1.");
+                MyConsole.log("Cannot receive DV from Neighbor(" + neighborIP_.toString('.') + "), code:1.");
             } catch (JSONException e) {
                 Router.RemoveNeighbor(neighborIP_);
-                MyConsole.log("Cannot receive DV from Neighbor(" + neighborIP_.toString() + "), code:2.");
+                MyConsole.log("Cannot receive DV from Neighbor(" + neighborIP_.toString('.') + "), code:2.");
             }
         }
     }

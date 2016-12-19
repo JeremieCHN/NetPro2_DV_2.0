@@ -19,7 +19,7 @@ public class Router {
         try {
             // get the local IPv4 address
             Inet4Address address = (Inet4Address) Inet4Address.getLocalHost();
-            LocalIP_ = new IP(address.getHostAddress(), '.');
+            LocalIP_ = new IP(address.getHostAddress(), "\\.");
 
             Neighbors_ = new RouteTable();
             LocalTable_ = new RouteTable();

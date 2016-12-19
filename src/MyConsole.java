@@ -7,57 +7,16 @@ import java.util.regex.Pattern;
 import static java.lang.System.exit;
 
 class MyConsole {
-    static void RunForAddNeighbor() throws IOException {
-        System.out.println("Please input the IP and the cost of this host's Neighbors. The IP is requested as \"A.B.C.D E\". Finish your input with a \"end\".");
-        System.out.print(Router.getLocalIP().toString() + "> ");
-
+    static String getInputLine() throws IOException {
+        System.out.print(Router.getLocalIP().toString('.') + "> ");
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        String input;
-
-        while (!(input = reader.readLine()).equals("end")) {
-
-            // check whether the input is true
-            if (!Pattern.matches("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3} [0-9]* *$", input)
-                    && !Pattern.matches(" *$", input)) {
-                log("Your input is wrong, please check your input.");
-                log("\"" + input + "\" is not a IP and cost, please input as \"A.B.C.D E\".");
-            }
-
-            // add the neighbor
-            else {
-                Pattern pattern = Pattern.compile("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3} [0-9]*$");
-                Matcher matcher = pattern.matcher(input);
-
-                String str = null;
-                if (matcher.find())
-                    str = matcher.group(0);
-
-                Pattern patternIP = Pattern.compile("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
-                Matcher matcherIP = patternIP.matcher(input);
-
-                String strIP = null;
-                if (matcherIP.find())
-                    strIP = matcherIP.group(0);
-
-                if (str != null && strIP != null) {
-                    String strCost = str.substring(strIP.length()+1);
-                    Router.addNeighbor(new IP(strIP, '.'), Integer.valueOf(strCost));
-                }
-
-            }
-
-            System.out.print(Router.getLocalIP().toString() + "> ");
-        }
-
-        System.out.println("Add " + Router.getNeighbors().size() + " Neighbors!");
+        return reader.readLine();
     }
 
     static void RunAsCMD() {
-
         String input;
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         try {
-            while ((input = reader.readLine()) != null) {
+            while ((input = getInputLine()) != null) {
 
                 // add neighbor and the cost to it
                 if (Pattern.matches("add [0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3} [0-9]* *$", input)) {
@@ -77,7 +36,7 @@ class MyConsole {
 
                     if (str != null && strIP != null) {
                         String strCost = str.substring(strIP.length()+1);
-                        Router.addNeighbor(new IP(strIP, '.'), Integer.valueOf(strCost));
+                        Router.addNeighbor(new IP(strIP, "\\."), Integer.valueOf(strCost));
                     }
                 }
 
@@ -90,7 +49,7 @@ class MyConsole {
                     if (matcherIP.find())
                         strIP = matcherIP.group(0);
 
-                    Router.RemoveNeighbor(new IP(strIP, '.'));
+                    Router.RemoveNeighbor(new IP(strIP, "\\."));
                 }
 
                 // send message (not the DV route message) to other route
@@ -137,8 +96,6 @@ class MyConsole {
                 else if (!Pattern.matches(" *$", input)) {
                     System.out.println("Your input is wrong, please check!");
                 }
-
-                System.out.print(Router.getLocalIP().toString() + "> ");
             }
         } catch (IOException e) {
             e.printStackTrace();

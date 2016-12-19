@@ -20,8 +20,8 @@ public class RouteEntry {
     }
 
     RouteEntry(JSONObject obj) throws JSONException, IOException {
-        DestinationIP_ = new IP(obj.getString("Destination"), '.');
-        NextHopIP_ = new IP(obj.getString("NextHop"), '.');
+        DestinationIP_ = new IP(obj.getString("Destination"), "\\.");
+        NextHopIP_ = new IP(obj.getString("NextHop"), "\\.");
         Cost_ = obj.getInt("Cost");
     }
 

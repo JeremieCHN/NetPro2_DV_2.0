@@ -27,7 +27,7 @@ public class SendDVToNeighbor extends Thread {
                 Thread.sleep(time);
 
                 if (!socket_.isConnected()) {
-                    MyConsole.log("The connection with " + neighborIP_.toString() + " for send DV is closed, code:0.");
+                    MyConsole.log("The connection with " + neighborIP_.toString('.') + " for send DV is closed, code:0.");
                     break;
                 }
 
@@ -49,17 +49,17 @@ public class SendDVToNeighbor extends Thread {
                 }
             }
 
-            MyConsole.log("Cannot send DV to Neighbor(" + neighborIP_.toString() + "), code:0.");
+            MyConsole.log("Cannot send DV to Neighbor(" + neighborIP_.toString('.') + "), code:0.");
             Router.RemoveNeighbor(neighborIP_);
         } catch (SocketException e) {
             e.printStackTrace();
-            MyConsole.log("Cannot send DV to Neighbor(" + neighborIP_.toString() + "), code:1.");
+            MyConsole.log("Cannot send DV to Neighbor(" + neighborIP_.toString('.') + "), code:1.");
             Router.RemoveNeighbor(neighborIP_);
         } catch (IOException e) {
-            MyConsole.log("Cannot send DV to Neighbor(" + neighborIP_.toString() + "), code:2.");
+            MyConsole.log("Cannot send DV to Neighbor(" + neighborIP_.toString('.') + "), code:2.");
             Router.RemoveNeighbor(neighborIP_);
         } catch (InterruptedException e) {
-            MyConsole.log("Cannot send DV to Neighbor(" + neighborIP_.toString() + "), code:3.");
+            MyConsole.log("Cannot send DV to Neighbor(" + neighborIP_.toString('.') + "), code:3.");
             Router.RemoveNeighbor(neighborIP_);
         }
     }
