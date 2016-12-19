@@ -1,9 +1,5 @@
 import java.io.IOException;
 import java.net.Inet4Address;
-import java.net.UnknownHostException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Router class, the operation and message of the local router
@@ -12,21 +8,26 @@ import java.util.Map;
 public class Router {
     private Router() {}
 
-    static private List<IP> Neighbors_;
+    static private RouteTable Neighbors_;
     static private IP LocalIP_;
     static private RouteTable LocalTable_;
+    static boolean isTableRefresh = false;
+    static int Port_ListenDV = 8000;
 
     // run the router
     static boolean init() {
         try {
+            // get the local IPv4 address
             Inet4Address address = (Inet4Address) Inet4Address.getLocalHost();
             LocalIP_ = new IP(address.getHostAddress(), '.');
 
-            Neighbors_ = new LinkedList<>();
+            Neighbors_ = new RouteTable();
             LocalTable_ = new RouteTable();
 
             System.out.println("Local IP is " + LocalIP_.toString('.'));
 
+            // start listen thread
+            new ListenDVThread().start();
         } catch (Exception e) {
             e.printStackTrace();
             MyConsole.log("Router Initialization failed");
@@ -36,24 +37,42 @@ public class Router {
     }
 
     // add neighbor
-    void addNeighbor(IP neighborIP) throws IOException {
-        Neighbors_.add(neighborIP);
+    static void addNeighbor(IP neighborIP, int cost) throws IOException {
+        Neighbors_.add(new RouteEntry(neighborIP, neighborIP, cost));
         SendDVToNeighbor thread = new SendDVToNeighbor(neighborIP);
         thread.start();
     }
 
     // remove neighbor
-    void RemoveNeighbor(IP neighborIP) {
-        for (IP i : Neighbors_) {
+    static void RemoveNeighbor(IP neighborIP) {
+        for (RouteEntry entry : Neighbors_) {
+            IP i = entry.getDestinationIP();
             if (i.equals(neighborIP)) {
-                Neighbors_.remove(i);
+                Neighbors_.remove(entry);
                 break;
             }
         }
     }
 
+    // check whether the neighbor alive
+    static boolean isNeighborConnected(IP neighborIP) {
+        for (RouteEntry entry : Neighbors_) {
+            if (entry.getDestinationIP().equals(neighborIP))
+                return true;
+        }
+        return false;
+    }
+
+    // combine the table from neighbor
+    static void addRoutesFromNeighbor(RouteTable table) {
+        isTableRefresh = true;
+        LocalTable_.combine(table);
+        LocalTable_.combine(Neighbors_);
+        isTableRefresh = false;
+    }
+
     // getters
-    static List<IP> getNeighbors() {
+    static RouteTable getNeighbors() {
         return Neighbors_;
     }
 

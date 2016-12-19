@@ -1,16 +1,32 @@
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.LinkedList;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.List;
 
 /**
  * Route table only use to:
  * 1.save entry
  * 2.combine two table
  * 3.search next hop
- *
+ * <p>
  * Created by xu国宝 on 2016/12/19.
  */
 public class RouteTable extends LinkedList<RouteEntry> {
+
+    RouteTable() {
+        super();
+    }
+
+    public RouteTable(JSONArray array) throws JSONException, IOException {
+        super();
+        for (int i = 0; i < array.length(); i++) {
+            JSONObject obj = array.getJSONObject(i);
+            add(new RouteEntry(obj));
+        }
+    }
 
     // search for the next hop of a destination
     public IP getNextHop(IP destination) {
@@ -27,11 +43,11 @@ public class RouteTable extends LinkedList<RouteEntry> {
             this.add(e);
 
         // clear the entry whose next hop cannot reach
-        removeIf(entry -> (!Router.getNeighbors().contains(entry.getNextHopIP())));
+        removeIf(entry -> (!Router.isNeighborConnected(entry.getNextHopIP())));
 
         // clear the entry whose cost is more
         for (int i = 1; i < size(); i++) {
-            if (this.get(i).getDestinationIP().equals(this.get(i-1).getDestinationIP()))
+            if (this.get(i).getDestinationIP().equals(this.get(i - 1).getDestinationIP()))
                 this.get(i).setCost(-1);
         }
         removeIf(entry -> entry.getCost() == -1);
@@ -68,5 +84,15 @@ public class RouteTable extends LinkedList<RouteEntry> {
 
             MyConsole.log(str);
         });
+    }
+
+    // to string as format of a JSONArray
+    @Override
+    public String toString() {
+        JSONArray array = new JSONArray();
+        for (RouteEntry e : this) {
+            array.put(e.toString());
+        }
+        return array.toString();
     }
 }

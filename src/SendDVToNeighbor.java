@@ -23,7 +23,7 @@ public class SendDVToNeighbor extends Thread {
             socket_.setKeepAlive(true);
 
             long time = 5000;
-            while (Router.getNeighbors().contains(neighborIP_)) {
+            while (Router.isNeighborConnected(neighborIP_)) {
                 Thread.sleep(time);
 
                 if (!socket_.isConnected()) {
@@ -35,7 +35,7 @@ public class SendDVToNeighbor extends Thread {
                     time = 30000;
 
                     PrintWriter writer = new PrintWriter(socket_.getOutputStream());
-                    writer.write(Router.getTable().toString() + "\r\n");
+                    writer.write(Router.getRouteTable().toString() + "\r\n");
                     writer.flush();
 
                     BufferedReader reader = new BufferedReader(new InputStreamReader(socket_.getInputStream()));

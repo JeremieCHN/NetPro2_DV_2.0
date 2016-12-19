@@ -59,8 +59,42 @@ class MyConsole {
         try {
             while ((input = reader.readLine()) != null) {
 
+                // add neighbor and the cost to it
+                if (Pattern.matches("add [0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3} [0-9]* *$", input)) {
+                    Pattern pattern = Pattern.compile("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3} [0-9]*$");
+                    Matcher matcher = pattern.matcher(input);
+
+                    String str = null;
+                    if (matcher.find())
+                        str = matcher.group(0);
+
+                    Pattern patternIP = Pattern.compile("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
+                    Matcher matcherIP = patternIP.matcher(input);
+
+                    String strIP = null;
+                    if (matcherIP.find())
+                        strIP = matcherIP.group(0);
+
+                    if (str != null && strIP != null) {
+                        String strCost = str.substring(strIP.length()+1);
+                        Router.addNeighbor(new IP(strIP, '.'), Integer.valueOf(strCost));
+                    }
+                }
+
+                // remove neighbor
+                else if (Pattern.matches("remove [0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3} *$", input)) {
+                    Pattern patternIP = Pattern.compile("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
+                    Matcher matcherIP = patternIP.matcher(input);
+
+                    String strIP = null;
+                    if (matcherIP.find())
+                        strIP = matcherIP.group(0);
+
+                    Router.RemoveNeighbor(new IP(strIP, '.'));
+                }
+
                 // send message (not the DV route message) to other route
-                if (Pattern.matches("send to [0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3} *$", input)) {
+                /*else if (Pattern.matches("send to [0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3} *$", input)) {
                     Pattern IPPattern = Pattern.compile("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$");
                     Matcher IPMatcher = IPPattern.matcher(input);
                     if (IPMatcher.find()) {
@@ -71,7 +105,7 @@ class MyConsole {
 
                         //Router.sendNewMessage(destinationIP, extra);
                     }
-                }
+                }*/
 
                 // show the route table
                 else if (Pattern.matches("show route table *$", input)) {
@@ -81,8 +115,8 @@ class MyConsole {
                 // show the neighbors had added
                 else if (Pattern.matches("show neighbors *$", input)) {
                     System.out.println("Neighbors:");
-                    for (IP i : Router.getNeighbors()) {
-                        System.out.println(i.toString('.'));
+                    for (RouteEntry entry : Router.getNeighbors()) {
+                        System.out.println(entry.getDestinationIP().toString('.'));
                     }
                 }
 
@@ -108,6 +142,8 @@ class MyConsole {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            log("Something unexpected happened, exit the router.");
+            exit(0);
         }
     }
 

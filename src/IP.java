@@ -30,8 +30,9 @@ class IP {
     byte[] getBytes() {
         byte[] bytes = new byte[4];
         for (int i = 0; i < 4; i++) {
-            bytes[i] = Integer.to (toIntArray()[i]);
+            bytes[i] = (byte) toIntArray()[i];
         }
+        return bytes;
     }
 
     // compare two ip (for sorting)
