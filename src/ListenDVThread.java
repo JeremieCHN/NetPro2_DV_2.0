@@ -47,8 +47,10 @@ public class ListenDVThread extends Thread {
         @Override
         public void run() {
             try {
-                while (Router.isNeighborConnected(neighborIP_)) {
+                while (true) {
+                    MyConsole.log("receive a connection");
 
+                    socket.setSoTimeout(60);
                     BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     String line = reader.readLine();
 

@@ -37,18 +37,23 @@ public class RouteTable extends LinkedList<RouteEntry> {
     }
 
     // combine two table
-    public void combine(RouteTable table) {
+    // @param table, is a RouteTable, the table which would be combine with this.
+    // @param Neighbors, is a RouteTable, if a entry whose next hop in table can reach,
+    // the entry's next hop must be a destination of someone in Neighbors.
+    // That means the entry whose next hop cannot reach will be cleared.
+    public void combine(RouteTable table, RouteTable Neighbors) {
         for (RouteEntry e : table)
             this.add(e);
 
-        // clear the entry whose next hop cannot reach
-        removeIf(entry -> (!Router.isNeighborConnected(entry.getNextHopIP())));
+        // TODO clear the entry whose next hop cannot reach
+        removeIf(entry -> (Neighbors.getNextHop(entry.getNextHopIP()) == null));
 
         // clear the entry whose cost is more
         for (int i = 1; i < size(); i++) {
             if (this.get(i).getDestinationIP().equals(this.get(i - 1).getDestinationIP()))
                 this.get(i).setCost(-1);
         }
+
         removeIf(entry -> entry.getCost() == -1);
     }
 

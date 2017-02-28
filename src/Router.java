@@ -5,7 +5,7 @@ import java.net.Inet4Address;
  * Router class, the operation and message of the local router
  * Created by xu国宝 on 2016/12/19.
  */
-public class Router {
+class Router {
     private Router() {}
 
     static private RouteTable Neighbors_;
@@ -39,6 +39,7 @@ public class Router {
     // add neighbor
     static void addNeighbor(IP neighborIP, int cost) throws IOException {
         Neighbors_.add(new RouteEntry(neighborIP, neighborIP, cost));
+        LocalTable_.combine(Neighbors_, Neighbors_);
         SendDVToNeighbor thread = new SendDVToNeighbor(neighborIP);
         thread.start();
     }
@@ -56,18 +57,13 @@ public class Router {
 
     // check whether the neighbor alive
     static boolean isNeighborConnected(IP neighborIP) {
-        for (RouteEntry entry : Neighbors_) {
-            if (entry.getDestinationIP().equals(neighborIP))
-                return true;
-        }
-        return false;
+        return Neighbors_.getNextHop(neighborIP) != null;
     }
 
     // combine the table from neighbor
     static void addRoutesFromNeighbor(RouteTable table) {
         isTableRefresh = true;
-        LocalTable_.combine(table);
-        LocalTable_.combine(Neighbors_);
+        LocalTable_.combine(table, Neighbors_);
         isTableRefresh = false;
     }
 
